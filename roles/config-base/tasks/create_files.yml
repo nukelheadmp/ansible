@@ -1,0 +1,10 @@
+- name: Create Files and Directories
+  file:
+    state: "{{ item.state }}" # absent, directory, *file, hard, link, touch
+    src: "{{ item.src }}"
+    path: "{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+    follow: "{{ item.follow }}"
+    force: "{{ item.force }}"

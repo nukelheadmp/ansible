@@ -1,0 +1,23 @@
+- name: Working in /etc/skel
+  include_tasks: create_files.yml
+  loop:
+    - { state: "{{ user_file.state }}", src: "{{ user_file.src }}", path: "/etc/skel/{{ user_file.path }}", owner: root, group: root, mode: "0700", follow: no, force: yes }
+
+- name: Working in /root
+  include_tasks: create_files.yml
+  loop:
+    - { state: "{{ user_file.state }}", src: "{{ user_file.src }}", path: "/root/{{ user_file.path }}", owner: root, group: root, mode: "0700", follow: no, force: yes }
+
+- name: Working in Home Directories
+  file:
+    state: "{{ user_file.state }}"
+    src: "{{ user_file.src }}"
+    path: "{{ user_home.path }}/{{ user_file.path }}"
+    owner: "{{ user_home.uid }}"
+    group: "{{ user_home.gid }}"
+    mode: "0700"
+    follow: no
+    force: yes
+  loop: "{{ user_homes.files }}"
+  loop_control:
+    loop_var: user_home

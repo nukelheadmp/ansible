@@ -1,0 +1,15 @@
+- name: Enable Global Dynamic CA
+  command: update-ca-trust force-enable
+
+- name: Add Trusted Certificates to CentOS and Fedora
+  copy:
+    src: "{{ item }}"
+    dest: /etc/pki/ca-trust/source/anchors
+    owner: root
+    group: root
+    mode: "0644"
+    backup: no
+  loop: "{{ ca_certs }}"
+
+- name: Import Certs
+  command: update-ca-trust extract

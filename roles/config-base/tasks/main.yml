@@ -1,0 +1,111 @@
+- name: Set Fedora Variables
+  when: ansible_facts['distribution'] == "Fedora"
+  include_vars: "vars/Fedora.yml"
+
+- name: Set EL 7 Variables
+  when:
+    - ansible_facts['distribution_file_variety'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "7"
+  include_vars: "vars/RedHat7.yml"
+
+- name: Set EL 8 Variables
+  when:
+    - ansible_facts['distribution_file_variety'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "8"
+  include_vars: "vars/RedHat8.yml"
+
+- name: Set EL 9 Variables
+  when:
+    - ansible_facts['distribution_file_variety'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "9"
+  include_vars: "vars/RedHat9.yml"
+
+- name: Set Ubuntu Variables
+  when: ansible_facts['distribution'] == "Ubuntu"
+  include_vars: "vars/Ubuntu.yml"
+
+- name: Set Gentoo Variables
+  when: ansible_facts['distribution'] == "Gentoo"
+  include_vars: "vars/Gentoo.yml"
+
+- name: Remove Packages
+  when: remove_packages is defined
+  package:
+    name: "{{ remove_packages }}"
+    state: absent
+
+- name: Install Packages
+  when: install_packages is defined
+  package:
+    name: "{{ install_packages }}"
+    state: latest
+
+- name: Add Trusted Certs on EL Systems
+  when: ansible_facts['distribution_file_variety'] == "RedHat"
+  include_tasks: certs-el.yml
+
+- name: Add Trusted Certs on Arch Systems
+  when: ansible_facts['distribution'] == "Arch" or ansible_facts['distribution'] == "Manjaro"
+  include_tasks: certs-arch.yml
+
+- name: Add Trusted Certs on Gentoo or Debian/Ubuntu
+  when: ansible_facts['distribution'] == "Debian" or ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Gentoo"
+  include_tasks: certs-deb.yml
+    
+- name: Create Fonts Directory
+  file:
+    state: directory
+    path: /usr/share/fonts/acmelabs
+
+- name: Install Fonts
+  copy:
+    src: "{{ item }}"
+    dest: /usr/share/fonts/acmelabs
+    owner: root
+    group: root
+    mode: "0644"
+    backup: no
+  loop:
+    - "HackNerdFont-Regular.ttf"
+    - "HackNerdFont-Bold.ttf"
+    - "HackNerdFont-Italic.ttf"
+    - "HackNerdFont-BoldItalic.ttf"
+    - "HackNerdFontMono-Regular.ttf"
+    - "HackNerdFontMono-Bold.ttf"
+    - "HackNerdFontMono-Italic.ttf"
+    - "HackNerdFontMono-BoldItalic.ttf"
+    - "HackNerdFontPropo-Regular.ttf"
+    - "HackNerdFontPropo-Bold.ttf"
+    - "HackNerdFontPropo-Italic.ttf"
+    - "HackNerdFontPropo-BoldItalic.ttf"
+
+- name: Create Config Directory
+  file:
+    state: "{{ item.state }}" # absent, directory, *file, hard, link, touch
+    src: "{{ item.src }}"
+    path: "{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+    follow: "{{ item.follow }}"
+    force: "{{ item.force }}"
+  loop:
+    - { state: "directory", src: , path: "/usr/share/acmelabs", owner: "root", group: "root", mode: "0755", follow: no, force: yes }
+
+- name: Setup Config Repo
+  git:
+    repo: "https://gitlab.priefert.com/open/acmelabs.git"
+    dest: "/usr/share/acmelabs"
+    force: yes
+
+- name: Create Symbolic Links
+  file:
+    state: "{{ item.state }}" # absent, directory, *file, hard, link, touch
+    src: "{{ item.src }}"
+    path: "{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    follow: "{{ item.follow }}"
+    force: "{{ item.force }}"
+  loop: "{{ config_files }}"
+

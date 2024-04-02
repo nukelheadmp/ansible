@@ -1,0 +1,2 @@
+ca_certs:
+  - "../files/gd_bundle-g2-g1.crt"

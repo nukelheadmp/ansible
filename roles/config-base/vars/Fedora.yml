@@ -1,0 +1,8 @@
+install_packages:
+  - ca-certificates
+  - git
+  - tmux
+config_files:
+  - { state: link, src: "/usr/share/acmelabs/etc/profile.d/99-custom.sh", path: "/etc/profile.d/99-custom.sh", owner: root, group: root, follow: no, force: yes }
+  - { state: link, src: "/usr/share/acmelabs/etc/tmux.conf", path: "/etc/tmux.conf", owner: root, group: root, follow: no, force: yes }
+  - { state: link, src: "/usr/share/acmelabs/etc/tmuxline.conf", path: "/etc/tmuxline.conf", owner: root, group: root, follow: no, force: yes }

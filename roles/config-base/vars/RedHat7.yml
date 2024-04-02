@@ -1,0 +1,13 @@
+base_packages:
+  - ca-certificates
+  - cmake
+  - gcc-c++
+  - git
+  - make
+  - python3-devel
+  - tmux
+config_files:
+  - { state: link, src: "/usr/share/acmelabs/config_files/bashrc", path: ".bashrc" }
+  - { state: link, src: "/usr/share/acmelabs/config_files/tmux.conf", path: ".tmux.conf" }
+  - { state: link, src: "/usr/share/acmelabs/config_files/promptline.sh", path: ".promptline.sh" }
+  - { state: link, src: "/usr/share/acmelabs/config_files/tmuxline.sh", path: ".tmuxline.sh" }

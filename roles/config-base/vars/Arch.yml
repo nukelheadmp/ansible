@@ -1,0 +1,5 @@
+base_packages:
+  - xclip
+  - neovim
+  - git
+  - tmux
