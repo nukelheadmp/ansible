@@ -1,0 +1,12 @@
+nvim_packages:
+  - "@Development Tools"
+  - gcc-c++
+  - neovim
+  - nodejs
+  - npm
+nvim_remove_packages:
+  - nano
+  - nano-default-editor
+  - vim-default-editor
+  - vim-enhanced
+  - vim-minimal
