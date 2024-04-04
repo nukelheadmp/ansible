@@ -1,0 +1,15 @@
+- name: Set Fedora Variables
+  when: ansible_facts['distribution'] == "Fedora"
+  include_vars: "vars/Fedora.yml"
+
+- name: Remove Packages
+  when: kde_remove_packages is defined
+  package:
+    name: "{{ kde_remove_packages }}"
+    state: absent
+
+- name: Install Packages
+  when: kde_install_packages is defined
+  package:
+    name: "{{ kde_install_packages }}"
+    state: latest

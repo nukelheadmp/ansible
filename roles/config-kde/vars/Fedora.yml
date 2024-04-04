@@ -1,0 +1,4 @@
+kde_install_packages:
+  - kleopatra
+kde_remove_packages:
+  - kgpg
