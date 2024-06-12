@@ -1,6 +1,3 @@
-- name: Enable Global Dynamic CA
-  command: update-ca-trust force-enable
-
 - name: Add Trusted Certificates to CentOS and Fedora
   copy:
     src: "{{ item }}"
