@@ -52,33 +52,6 @@
   when: ansible_facts['distribution'] == "Debian" or ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Gentoo"
   include_tasks: certs-deb.yml
     
-- name: Create Fonts Directory
-  file:
-    state: directory
-    path: /usr/share/fonts/acmelabs
-
-- name: Install Fonts
-  copy:
-    src: "{{ item }}"
-    dest: /usr/share/fonts/acmelabs
-    owner: root
-    group: root
-    mode: "0644"
-    backup: no
-  loop:
-    - "HackNerdFont-Regular.ttf"
-    - "HackNerdFont-Bold.ttf"
-    - "HackNerdFont-Italic.ttf"
-    - "HackNerdFont-BoldItalic.ttf"
-    - "HackNerdFontMono-Regular.ttf"
-    - "HackNerdFontMono-Bold.ttf"
-    - "HackNerdFontMono-Italic.ttf"
-    - "HackNerdFontMono-BoldItalic.ttf"
-    - "HackNerdFontPropo-Regular.ttf"
-    - "HackNerdFontPropo-Bold.ttf"
-    - "HackNerdFontPropo-Italic.ttf"
-    - "HackNerdFontPropo-BoldItalic.ttf"
-
 - name: Create Config Directory
   file:
     state: "{{ item.state }}" # absent, directory, *file, hard, link, touch
