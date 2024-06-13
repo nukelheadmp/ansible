@@ -51,7 +51,23 @@
 - name: Add Trusted Certs on Gentoo or Debian/Ubuntu
   when: ansible_facts['distribution'] == "Debian" or ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Gentoo"
   include_tasks: certs-deb.yml
+
+- name: Configure SSHD
+  copy:
+    src: "../files/99-custom-sshd.conf"
+    dest: /etc/ssh/sshd_config.d/
+    owner: root
+    group: root
+    mode: "0600"
+    backup: no
     
+- name: Enable and Start SSHD
+  when: ansible_facts['distribution_file_variety'] == "RedHat"
+  service:
+    name: sshd
+    enabled: yes
+    state: restarted
+
 - name: Create Config Directory
   file:
     state: "{{ item.state }}" # absent, directory, *file, hard, link, touch
