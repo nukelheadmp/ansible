@@ -1,0 +1,52 @@
+- name: Set Fedora Variables
+  when: ansible_facts['distribution'] == "Fedora"
+  include_vars: "vars/Fedora.yml"
+
+- name: Set EL 7 Variables
+  when:
+    - ansible_facts['distribution_file_variety'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "7"
+  include_vars: "vars/RedHat7.yml"
+
+- name: Set EL 8 Variables
+  when:
+    - ansible_facts['distribution_file_variety'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "8"
+  include_vars: "vars/RedHat8.yml"
+
+- name: Set EL 9 Variables
+  when:
+    - ansible_facts['distribution_file_variety'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "9"
+  include_vars: "vars/RedHat9.yml"
+
+- name: Set Ubuntu Variables
+  when: ansible_facts['distribution'] == "Ubuntu"
+  include_vars: "vars/Ubuntu.yml"
+
+- name: Set Gentoo Variables
+  when: ansible_facts['distribution'] == "Gentoo"
+  include_vars: "vars/Gentoo.yml"
+
+- name: Add Microsoft Repo
+  yum_repository:
+    name: packages-microsoft-com-prod
+    description: packages-microsoft-com-prod
+    baseurl: "{{ repo_url }}"
+    gpgcheck: yes
+    gpgkey: "https://packages.microsoft.com/keys/microsoft.asc"
+
+- name: Remove Packages
+  when: remove_packages is defined
+  package:
+    name: "{{ remove_packages }}"
+    state: absent
+
+- name: Install Packages
+  when: install_packages is defined
+  package:
+    name: "{{ install_packages }}"
+    state: latest
+  environment:
+    ACCEPT_EULA: 'YES'
+
