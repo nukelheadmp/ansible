@@ -17,13 +17,13 @@
 - name: Install csh Default Editor Script
   copy:
     src: files/nvim-default-editor.csh
-    dest: /etc/profiles.d/nvim-default-editor.csh
+    dest: /etc/profile.d/nvim-default-editor.csh
     mode: 0644
     owner: root
 
 - name: Install sh Default Editor Script
   copy:
     src: files/nvim-default-editor.sh
-    dest: /etc/profiles.d/nvim-default-editor.sh
+    dest: /etc/profile.d/nvim-default-editor.sh
     mode: 0644
     owner: root

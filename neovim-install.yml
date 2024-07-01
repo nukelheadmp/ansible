@@ -1,0 +1,7 @@
+- name: Neovim Install
+  hosts: localhost
+  become: yes
+  tasks:
+  - name: Run Role
+    include_role:
+      name: neovim-install
