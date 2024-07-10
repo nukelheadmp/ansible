@@ -1,0 +1,148 @@
+- name: Install Repo (EL 7)
+  when:
+    - ansible_facts['distribution_file_variety'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "7"
+  package:
+    name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    state: installed
+ 
+- name: Enable PostgreSQL 13 (EL 8 and Fedora)
+  when:
+    - ansible_facts['distribution_file_variety'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution'] == "Fedora"
+  command: dnf module enable -y postgresql:13
+  args:
+    warn: false
+
+- name: Install Base Packages (EL and Fedora)
+  when: ansible_facts['distribution_file_variety'] == "RedHat"
+  package:
+    name:
+      - postgresql-server
+      - postgresql-contrib
+    state: installed
+  register: sql_install_result
+
+#- name: Generate an OpenSSL private key
+#  openssl_privatekey:
+#    path: "/var/lib/pgsql/data/{{ server_hostname }}.key"
+#    size: "{{ key_size }}"
+#    type: "{{ key_type }}"
+#    backup: yes
+#
+#- name: Generate an OpenSSL Certificate Signing Request with Subject information
+#  openssl_csr:
+#    path: "/var/lib/pgsql/data/{{ server_hostname }}.csr"
+#    privatekey_path: "/var/lib/pgsql/data/{{ server_hostname }}.key"
+#    country_name: "{{ country_name }}"
+#    organization_name: "{{ organization_name }}"
+#    email_address: "{{ email_address }}"
+#    common_name: "{{ server_hostname }}"
+#
+#- name: Generate a Self Signed OpenSSL certificate
+#  openssl_certificate:
+#    path: "/var/lib/pgsql/data/{{ server_hostname }}.crt"
+#    privatekey_path: "/var/lib/pgsql/data/{{ server_hostname }}.key"
+#    csr_path: "/var/lib/pgsql/data/{{ server_hostname }}.csr"
+#    provider: selfsigned
+
+- name: Initialize Database (EL 7)
+  when:
+    - sql_install_result.changed
+    - ansible_facts['distribution_file_variety'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "7"
+  command: postgresql-setup initdb
+
+- name: Initialize Database (EL 8 and Fedora)
+  when:
+    - sql_install_result.changed
+    - ansible_facts['distribution_file_variety'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution'] == "Fedora"
+  command: postgresql-setup --initdb
+
+- name: Backup Original pg_hba.conf (EL and Fedora)
+  when: ansible_facts['distribution_file_variety'] == "RedHat"
+  shell: cp pg_hba.conf pg_hba.conf.bak
+  args:
+    chdir: /var/lib/pgsql/data/
+    creates: pg_hba.conf.bak
+
+- name: Backup Original postgresql.conf (EL and Fedora)
+  when: ansible_facts['distribution_file_variety'] == "RedHat"
+  shell: cp postgresql.conf postgresql.conf.bak
+  args:
+    chdir: /var/lib/pgsql/data/
+    creates: postgresql.conf.bak
+
+- name: Copy pg_hba.conf (EL and Fedora)
+  when: ansible_facts['distribution_file_variety'] == "RedHat"
+  copy:
+    src: files/pg_hba.conf
+    dest: /var/lib/pgsql/data/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: "0600"
+
+- name: Copy postgresql.conf (EL and Fedora)
+  when: ansible_facts['distribution_file_variety'] == "RedHat"
+  copy:
+    src: files/postgresql.conf
+    dest: /var/lib/pgsql/data/postgresql.conf
+    owner: postgres
+    group: postgres
+    mode: "0600"
+
+#- name: Comment out localhost line in pg_hba.conf
+#  replace:
+#    backup: no
+#    path: /var/lib/pgsql/data/pg_hba.conf
+#    regexp: '(^host.*127.0.0.1\/32.*)'
+#    replace: '#\1'
+#
+#- name: Comment out IPv6 localhost line in pg_hba.conf
+#  replace:
+#    backup: no
+#    path: /var/lib/pgsql/data/pg_hba.conf
+#    regexp: '(^host.*::1\/128.*)'
+#    replace: '#\1'
+#
+#- name: Add new host config lines
+#  blockinfile:
+#    dest: /var/lib/pgsql/data/pg_hba.conf
+#    block: |
+#      host all all 0.0.0.0/0 md5
+#      host all all ::1/128 md5
+#
+#- name: Add listen_addresses to postgresql.conf
+#  blockinfile:
+#    dest: /var/lib/pgsql/data/postgresql.conf
+#    backup: no
+#    block: |
+#      listen_addresses = '*'
+#      #ssl = on
+#      #ssl_cert_file = '/var/lib/pgsql/data/{{ server_hostname }}.crt'
+#      #ssl_key_file = '/var/lib/pgsql/data/{{ server_hostname }}.key'
+
+- name: Open Ports in firewalld
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: yes
+    immediate: yes
+  loop:
+    - postgresql
+
+#- name: Set SELinux Booleans
+#  seboolean:
+#    name: "{{ item }}"
+#    state: yes
+#    persistent: yes
+#  loop:
+#    - httpd_can_network_connect
+#    - httpd_read_user_content
+
+- name: Enable and Start PostgreSQL
+  service:
+    name: postgresql
+    enabled: yes
+    state: restarted

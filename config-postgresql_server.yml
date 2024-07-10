@@ -1,0 +1,14 @@
+- name: Install PostgreSQL Server
+  hosts: localhost
+  become: yes
+  vars:
+    - server_hostname: localhost
+    - key_size: 2048
+    - key_type: RSA
+    - country_name: US
+    - email_address: root@localhost
+    - organization_name: localhost
+  tasks:
+  - name: PostgreSQL Role
+    include_role:
+      name: postgresql_server
