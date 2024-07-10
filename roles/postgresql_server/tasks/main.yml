@@ -9,7 +9,7 @@
 - name: Enable PostgreSQL 13 (EL 8 and Fedora)
   when:
     - ansible_facts['distribution_file_variety'] == "RedHat"
-    - ansible_facts['distribution_major_version'] == "8" or ansible_facts['distribution'] == "Fedora"
+    - ansible_facts['distribution_major_version'] == "8"
   command: dnf module enable -y postgresql:13
   args:
     warn: false
