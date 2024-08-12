@@ -1,0 +1,7 @@
+- name: Base Configuration
+  hosts: linux_hosts
+  become: yes
+  tasks:
+  - name: Run Role
+    include_role:
+      name: config-ca
