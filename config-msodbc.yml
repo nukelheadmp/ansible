@@ -1,5 +1,5 @@
 - name: Base msodbc
-  hosts: localhost
+  hosts: linux_hosts
   become: yes
   tasks:
   - name: Run Role

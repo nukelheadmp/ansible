@@ -1,5 +1,5 @@
 - name: Base Configuration
-  hosts: localhost
+  hosts: linux_hosts
   become: yes
   tasks:
   - name: Run Role
