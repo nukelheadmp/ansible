@@ -40,18 +40,6 @@
     name: "{{ install_packages }}"
     state: latest
 
-- name: Add Trusted Certs on EL Systems
-  when: ansible_facts['distribution_file_variety'] == "RedHat"
-  include_tasks: certs-el.yml
-
-- name: Add Trusted Certs on Arch Systems
-  when: ansible_facts['distribution'] == "Arch" or ansible_facts['distribution'] == "Manjaro"
-  include_tasks: certs-arch.yml
-
-- name: Add Trusted Certs on Gentoo or Debian/Ubuntu
-  when: ansible_facts['distribution'] == "Debian" or ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Gentoo"
-  include_tasks: certs-deb.yml
-
 - name: Configure SSHD
   copy:
     src: "../files/99-custom-sshd.conf"

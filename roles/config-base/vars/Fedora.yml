@@ -1,5 +1,4 @@
 install_packages:
-  - ca-certificates
   - git
   - tmux
   - openssh-server
