@@ -56,33 +56,16 @@
     enabled: yes
     state: restarted
 
-- name: Create Config Directory
-  file:
-    state: "{{ item.state }}" # absent, directory, *file, hard, link, touch
-    src: "{{ item.src }}"
-    path: "{{ item.path }}"
-    owner: "{{ item.owner }}"
-    group: "{{ item.group }}"
-    mode: "{{ item.mode }}"
-    follow: "{{ item.follow }}"
-    force: "{{ item.force }}"
-  loop:
-    - { state: "directory", src: , path: "/usr/share/acmelabs", owner: "root", group: "root", mode: "0755", follow: no, force: yes }
+- name: Backup Files
+  command: mv "{{ item }}" "{{ item }}".orig
+  args:
+    creates: "{{ item }}.orig"
 
-- name: Setup Config Repo
-  git:
-    repo: "https://gitlab.priefert.com/open/acmelabs.git"
-    dest: "/usr/share/acmelabs"
-    force: yes
-
-- name: Create Symbolic Links
-  file:
-    state: "{{ item.state }}" # absent, directory, *file, hard, link, touch
-    src: "{{ item.src }}"
-    path: "{{ item.path }}"
-    owner: "{{ item.owner }}"
-    group: "{{ item.group }}"
-    follow: "{{ item.follow }}"
-    force: "{{ item.force }}"
+- name: Copy Config Files
+  copy:
+    src: "files/{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "0644"
   loop: "{{ config_files }}"
-
