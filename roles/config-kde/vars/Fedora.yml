@@ -1,4 +1,5 @@
 kde_install_packages:
+  - f40-backgrounds-extra-kde
   - kleopatra
 kde_remove_packages:
   - kgpg
