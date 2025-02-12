@@ -1,0 +1,6 @@
+- name: Base Configuration
+  hosts: all
+  become: no
+  tasks:
+  - name: Ping
+    ansible.builtin.ping:
