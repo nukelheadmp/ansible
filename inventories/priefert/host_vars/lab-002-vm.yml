@@ -1,0 +1,3 @@
+## SSH settings
+ansible_connection: ssh
+ansible_shell_type: powershell
