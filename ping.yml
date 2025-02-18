@@ -2,5 +2,10 @@
   hosts: all
   become: no
   tasks:
-  - name: Ping
+  - name: ping
+    when: ansible_os_family != "Windows"
+    ansible.builtin.ping:
+
+  - name: win_ping
+    when: ansible_os_family == "Windows"
     ansible.builtin.win_ping:

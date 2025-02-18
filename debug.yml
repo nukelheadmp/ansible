@@ -1,0 +1,11 @@
+- name: Debug
+  hosts: all
+  become: no
+  tasks:
+  - name: Show ansible_facts
+    ansible.builtin.debug:
+      var: ansible_facts
+
+  - name: Show ansible_os_family
+    ansible.builtin.debug:
+      var: ansible_os_family
