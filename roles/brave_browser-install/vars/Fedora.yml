@@ -1,0 +1,4 @@
+brave_packages:
+  - brave-browser
+brave_remove_packages:
+  - firefox

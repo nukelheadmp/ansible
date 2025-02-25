@@ -1,0 +1,22 @@
+- name: Set Fedora Variables
+  when: ansible_facts['distribution'] == "Fedora"
+  include_vars: "vars/Fedora.yml"
+
+- name: Add Repository
+  when: ansible_facts['os_family'] == "RedHat"
+  ansible.builtin.yum_repository:
+    name: brave-browser
+    description: Brave Browser
+    baseurl: "{{ brave_repo_url }}"
+
+- name: Install Packages
+  when: brave_packages is defined
+  package:
+    name: "{{ brave_packages }}"
+    state: latest
+
+- name: Remove Packages
+  when: brave_remove_packages is defined
+  package:
+    name: "{{ brave_remove_packages }}"
+    state: absent
