@@ -9,6 +9,10 @@
     description: Brave Browser
     baseurl: "{{ brave_repo_url }}"
 
+- name: Clean Metadata
+  when: ansible_facts['os_family'] == "RedHat"
+  ansible.builtin.command: yum clean metadata
+
 - name: Install Packages
   when: brave_packages is defined
   package:
