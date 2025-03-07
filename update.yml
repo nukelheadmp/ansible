@@ -1,0 +1,7 @@
+- name: Install Updates
+  hosts: all
+  become: yes
+  tasks:
+  - name: win_updates
+    when: ansible_os_family == "Windows"
+    ansible.builtin.win_updates:
